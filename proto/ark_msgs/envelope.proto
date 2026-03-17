@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+// Container for all messages sent over Ark network
+message Envelope {
+
+  enum EndpointType {
+    UNSPECIFIED = 0;
+    PUBLISH = 1;
+    RECEIVE = 2;
+    REQUEST = 3;
+    RESPONSE = 4;
+  }
+  
+  EndpointType endpoint_type = 1;
+  string channel = 2;
+  string src_node_name = 3;
+  string dst_node_name = 4; // not set for PUBLISH/REQUEST type
+  uint64 sent_seq_index = 5;
+  uint64 recv_seq_index = 6;
+  uint64 sent_timestamp = 7;
+  uint64 recv_timestamp = 8;
+  string msg_type = 9;
+  bytes payload = 10;
+  Envelope req_env = 11; // only used in RESPONSE types
+
+}

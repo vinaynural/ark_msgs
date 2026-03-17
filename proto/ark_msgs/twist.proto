@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/vector3.proto";
+
+// A twist roughly representing velocity.
+message Twist {
+  Vector3 linear = 1;
+  Vector3 angular = 2;
+}

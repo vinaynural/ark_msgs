@@ -2,8 +2,8 @@
 
 The `ark_msgs` package provides a set of protobuf-based message definitions and lightweight Python helpers used throughout the Ark framework.
 
-In `ark_msgs`, we use monkeypatching to add convenience methods directly to the generated protobuf message classes. 
-Protobuf code is auto-generated and should not be edited by hand, but many applications benefit from rich, domain-specific helpers (e.g. quaternion and rotation conversions). 
+In `ark_msgs`, we use monkeypatching to add convenience methods directly to the generated protobuf message classes.
+Protobuf code is auto-generated and should not be edited by hand, but many applications benefit from rich, domain-specific helpers (e.g. quaternion and rotation conversions).
 Monkeypatching allows us to extend the `Rotation` message with a SciPy-compatible API while keeping the generated files untouched and fully regenerable. This provides a clean, familiar interface without introducing wrapper types or duplicating data structures.
 
 # Install
@@ -21,29 +21,38 @@ Documentation for each message type supported in `ark_msgs` can be found below.
 - [Core](#core)
 - [Geometry](#geometry)
 - [Sensor](#sensor)
+- [Control](#control)
 
 ## Core
 
 Core messages used by Ark.
 
-### ArkMessage
+### Envelope
 
 This is the message that is actually sent across the network.
 
 ##### Fields
 
-- `EndPointType`: enum for end point types 
 - `endpoint_type`: the end point type that is handling the message
+- `channel`: channel name that the mmessage was sent across
 - `src_node_name`: the name of the source node
 - `dst_node_name`: the name of the destination node
 - `sent_timestamp`: the timestamp when the message was sent
 - `recv_timestamp`: the timestamp when the message was recieved
 - `msg_type`: the type of the payload message as a string
 - `payload`: the payload of the message as bytes
+- `req_msg`: the request message, this is only used in RESPONSE types
+
+##### Helpers
+
+- `ArkMessage.pack(clock, msg)`  
+  Packs a message as an ArkMessage with the timestamp from the clock (`ark.clock.Clock`).
+- `ArkMessage.from_sample(sample)`
+  Retreive the `ArkMessage` from the given Zenoh sample.
 
 ##### Usage
 
-`ArkMessage` is not designed for user code, so should not be used.
+`Envelope` is not designed for user code, so should not be used.
 
 ## Geometry
 
@@ -276,23 +285,61 @@ T3 = T1 * T2
 T_inv = T1.inv()
 ```
 
+### Twist
+
+`Twist` roughly represents velocity.
+
+##### Fields
+
+- `linear`: Linear velocity (`ark_msgs.Translation`).
+- `angular`: Angular velocity (`ark_msgs.Translation`).
+
+##### Usage
+
+```python
+from ark_msgs.twist import Twist
+
+# Create from array [vx, vy, vz, wx, wy, wz]
+t = Twist.from_array([1.0, 0.0, 0.0, 0.0, 0.0, 0.1])
+arr = t.as_array()
+```
+
+### Wrench
+
+`Wrench` represents force and torque.
+
+##### Fields
+
+- `force`: Force (`ark_msgs.Translation`).
+- `torque`: Torque (`ark_msgs.Translation`).
+
+##### Usage
+
+```python
+from ark_msgs.wrench import Wrench
+
+# Create from array [fx, fy, fz, tx, ty, tz]
+w = Wrench.from_array([10.0, 0.0, 0.0, 0.0, 0.0, 1.0])
+arr = w.as_array()
+```
+
 ## Sensor
 
 Common sensor message types.
 
 ### JointState
 
-`JointState` represents the joint states for a robot at an instance in time. 
+`JointState` represents the joint states for a robot at an instance in time.
 
 ##### Fields
 
 - `name`: Joint names.
 - `position`: Joint positions (e.g. radians or meters).
 - `velocity`: Joint velocities.
-- `effort`: Joint efforts or currents (e.g. torque or force or amps)  
+- `effort`: Joint efforts or currents (e.g. torque or force or amps)
 - `ext_torque`: External torques acting on the robot joints.
 
-All numeric fields use `float32`. 
+All numeric fields use `float32`.
 Elements at the same index across fields refer to the same joint.
 
 ##### Usage
@@ -308,3 +355,68 @@ js = JointState(
     effort=[-0.2, -0.1],
 )
 ```
+
+### Image
+
+Generic image message (supports RGB, BGR, Mono, etc.).
+
+##### Fields
+
+- `height`, `width`: Image dimensions.
+- `encoding`: String encoding (e.g., "rgb8", "bgr8").
+- `step`: Row length in bytes.
+- `data`: Raw bytes.
+
+##### Usage
+
+```python
+from ark_msgs.image import Image
+import numpy as np
+
+# Create from numpy array
+data = np.zeros((100, 100, 3), dtype=np.uint8)
+img = Image.from_array(data, encoding="rgb8")
+
+# Convert back to numpy
+arr = img.as_array()
+```
+
+### Joystick
+
+Joystick input state.
+
+##### Fields
+
+- `axes`: Float values for axes.
+- `buttons`: Integer values for buttons.
+
+### IMU
+
+Inertial Measurement Unit data.
+
+##### Fields
+
+- `orientation` (`Rotation`).
+- `angular_velocity` (`Translation`).
+- `linear_acceleration` (`Translation`).
+
+## Control
+
+### ParallelGripperCommand
+
+Command for parallel grippers.
+
+##### Fields
+
+- `width`: Target width (meters).
+- `max_force`: Maximum force (Newtons).
+
+### JointArrayCommand
+
+Command for a set of joints.
+
+##### Fields
+
+- `name`: List of joint names.
+- `value`: List of command values.
+- `mode`: `POSITION`, `VELOCITY`, or `TORQUE`.

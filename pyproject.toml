@@ -17,8 +17,12 @@ maintainers = [
   { name = "Christopher E. Mower" }
 ]
 
+[project.optional-dependencies]
+pil = ["pillow"]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+

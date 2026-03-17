@@ -11,8 +11,9 @@ ProtoOrScipyRotation = Rotation | Rot
 
 def _as_scipy(r: ProtoOrScipyRotation) -> Rot:
     """Convert to scipy.spatial.transform.Rotation."""
-    x, y, z, w = r.as_quat().reshape(4).astype(np.float32)
-    return Rot.from_quat([x, y, z, w])
+    if isinstance(r, Rotation):
+        return Rot.from_quat([r.x, r.y, r.z, r.w])
+    return r
 
 
 def _as_proto(r: ProtoOrScipyRotation) -> Rotation:

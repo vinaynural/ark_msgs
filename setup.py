@@ -5,6 +5,14 @@ from setuptools import setup
 from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop as _develop
 
+# Clear up old generated protos before regenerating
+for pyi_file in Path("src/ark_msgs").rglob("*.pyi"):
+    if pyi_file.name.endswith("_pb2.pyi") or pyi_file.name.endswith("_pb2_grpc.pyi"):
+        pyi_file.unlink()
+for py_file in Path("src/ark_msgs").rglob("*.py"):
+    if py_file.name.endswith("_pb2.py") or py_file.name.endswith("_pb2_grpc.py"):
+        py_file.unlink()
+
 PKG_PROTO_ROOT = Path("proto")
 
 

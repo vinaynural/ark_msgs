@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+// Joystick input state.
+message Joystick {
+  repeated float axis = 1;
+  repeated int32 button = 2;
+  repeated string axis_name = 3;
+  repeated string button_name = 4;
+}

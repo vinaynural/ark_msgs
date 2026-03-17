@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+// Command for a motor array (e.g., robot joints).
+message MotorArrayCommand {
+  string group = 1;
+  repeated float value = 2;
+}

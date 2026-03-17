@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+// Image metadata key-value pair.
+message ImageMetadata {
+  string key = 1;
+  bytes value = 2;
+}

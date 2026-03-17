@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/image_metadata.proto";
+
+// A generic image message, matching bot_core_image_t conventions.
+message Image {
+  int32 width = 1;
+  int32 height = 2;
+  int32 row_stride = 3;
+
+  enum PixelFormat {
+      UNKNOWN          = 0;
+      UYVY             = 1498831189;
+      YUYV             = 1448695129;
+      IYU1             = 827677001;
+      IYU2             = 844454217;
+      YUV420           = 842093913;
+      YUV411P          = 1345401140;
+      I420             = 808596553;
+      NV12             = 842094158;
+      GRAY             = 1497715271;
+      RGB              = 859981650;
+      BGR              = 861030210;
+      RGBA             = 876758866;
+      BGRA             = 877807426;
+      BAYER_BGGR       = 825770306;
+      BAYER_GBRG       = 844650584;
+      BAYER_GRBG       = 861427800;
+      BAYER_RGGB       = 878205016;
+      BE_BAYER16_BGGR  = 826360386;
+      BE_BAYER16_GBRG  = 843137602;
+      BE_BAYER16_GRBG  = 859914818;
+      BE_BAYER16_RGGB  = 876692034;
+      LE_BAYER16_BGGR  = 826360396;
+      LE_BAYER16_GBRG  = 843137612;
+      LE_BAYER16_GRBG  = 859914828;
+      LE_BAYER16_RGGB  = 876692044;
+      MJPEG            = 1196444237;
+      BE_GRAY16        = 357;
+      LE_GRAY16        = 909199180;
+      BE_RGB16         = 358;
+      LE_RGB16         = 1279412050;
+      BE_SIGNED_GRAY16 = 359;
+      BE_SIGNED_RGB16  = 360;
+      FLOAT_GRAY32     = 842221382;
+  }
+  PixelFormat pixel_format = 5;
+
+  int32 size = 6;
+  bytes data = 7;
+
+  repeated ImageMetadata metadata = 8;
+}
+

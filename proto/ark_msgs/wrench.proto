@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/vector3.proto";
+
+// A wrench representing force and torque.
+message Wrench {
+  Vector3 force = 1;
+  Vector3 torque = 2;
+}
